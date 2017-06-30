@@ -1,0 +1,56 @@
+{
+  "name": "library-name",
+  "version": "0.0.0",
+  "description": "light weight library",
+  "main": "dist/bundle.js",
+  "umd:main": "dist/bundle.umd.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test eslint src test && jest",
+    "build": "cross-env NODE_ENV=production npm-run-all clean -p rollup:* -p minify:* -s size",
+    "clean": "rimraf dist && mkdirp dist",
+    "rollup:cjs": "rollup -c rollup.config.js -m -f cjs -n gql src/index.js -o $npm_package_main",
+    "rollup:umd": "rollup -c rollup.config.js -m -f umd -n gql src/index.js -o $npm_package_umd_main",
+    "minify:cjs": "uglifyjs $npm_package_main -cm toplevel -o $npm_package_main --source-map content=${npm_package_main}.map --source-map filename=${npm_package_main}.map",
+    "minify:umd": "uglifyjs $npm_package_umd_main -cm -o $npm_package_umd_main --source-map content=${npm_package_umd_main}.map --source-map filename=${npm_package_umd_main}.map",
+    "size": "echo \"Gzipped Size: $(strip-json-comments --no-whitespace $npm_package_main | gzip-size)\"",
+    "prepublish": "npm run -s build",
+    "release": "npm run build -s && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
+  },
+  "author": "Nick Randall",
+  "license": "MIT",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "eslint:recommended",
+    "env": {
+      "browser": true,
+      "mocha": true,
+      "node": true,
+      "es6": true
+    },
+    "globals": {
+      "expect": true
+    }
+  },
+  "devDependencies": {
+    "babel-core": "^6.9.1",
+    "babel-eslint": "^7.1.1",
+    "babel-jest": "^20.0.3",
+    "babel-preset-env": "^1.5.2",
+    "cross-env": "^5.0.1",
+    "eslint": "^4.1.1",
+    "gzip-size-cli": "^2.0.0",
+    "jest": "^20.0.4",
+    "jest-fetch-mock": "^1.0.6",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.0.2",
+    "rimraf": "^2.5.2",
+    "rollup": "^0.43.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "strip-json-comments-cli": "^1.0.1",
+    "uglify-es": "^3.0.22"
+  }
+}
